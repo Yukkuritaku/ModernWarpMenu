@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ModernWarpMenu Visual Layout Editor</title>
+  <style>
+    :root {
+      --bg: #0f1520;
+      --panel: #172235;
+      --panel-2: #1d2b43;
+      --line: #304663;
+      --text: #e8f0ff;
+      --muted: #9bb0cc;
+      --accent: #77d4ff;
+      --good: #8bf18b;
+      --bad: #ff9e9e;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 10% 0%, #22324d 0%, var(--bg) 60%);
+      overflow: hidden;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: 56px 1fr;
+      height: 100%;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-right: 8px;
+      color: #eaf4ff;
+    }
+
+    .spacer { flex: 1; }
+
+    .group {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding-right: 8px;
+      border-right: 1px solid #2c405c;
+      margin-right: 4px;
+    }
+
+    button, select, input[type="number"] {
+      border: 1px solid #385175;
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 9px;
+      font-size: 12px;
+    }
+
+    button:hover { filter: brightness(1.08); cursor: pointer; }
+    button:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+    button.primary { background: #214120; border-color: #3b7f3b; }
+    button.warn { background: #4d2b2b; border-color: #8a4d4d; }
+
+    input[type="number"] { width: 90px; }
+    label.inline { font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      min-height: 0;
+    }
+
+    .canvas-pane {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      padding: 14px;
+    }
+
+    .canvas-shell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in srgb, #111927 80%, black);
+      overflow: auto;
+      padding: 12px;
+    }
+
+    .viewport-wrap {
+      min-width: 100%;
+      min-height: 100%;
+      width: max-content;
+      height: max-content;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sandbox-pad-y, 300px) var(--sandbox-pad-x, 400px);
+    }
+
+    .viewport {
+      position: relative;
+      width: fit-content;
+      height: fit-content;
+      transform-origin: top left;
+    }
+
+    .stage {
+      position: relative;
+      border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,.2);
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+      touch-action: none;
+    }
+    .stage-grid {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .stage-resizer {
+      position: absolute;
+      right: 2px;
+      bottom: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,.45);
+      background:
+        linear-gradient(135deg, transparent 40%, rgba(255,255,255,.75) 40%, rgba(255,255,255,.75) 52%, transparent 52%),
+        rgba(24, 37, 56, .9);
+      cursor: nwse-resize;
+      z-index: 350000;
+    }
+
+    .overlay {
+      position: absolute;
+      right: 22px;
+      bottom: 22px;
+      z-index: 50000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(12,18,28,.82);
+      border: 1px solid #385175;
+      border-radius: 10px;
+      padding: 8px;
+      backdrop-filter: blur(2px);
+    }
+
+    .overlay button { width: 30px; height: 30px; padding: 0; font-size: 16px; }
+    .overlay input[type="range"] { width: 130px; }
+    .zoom-label { font-size: 12px; min-width: 44px; text-align: center; color: var(--muted); }
+
+    .island {
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 6px;
+      background: rgba(30,42,63,.65);
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      overflow: hidden;
+      text-align: center;
+      padding: 4px;
+      transition: left 140ms ease, top 140ms ease, width 140ms ease, height 140ms ease, filter 140ms ease;
+    }
+    .island:active { cursor: grabbing; }
+    .island.selected { outline: 2px solid var(--accent); z-index: 99999 !important; }
+    .island .img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+    .island .img, .portal img { filter: brightness(var(--btn-brightness, 0.9)); }
+    .island .title {
+      position: relative;
+      z-index: 2;
+      background: rgba(0,0,0,.45);
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-size: 12px;
+      pointer-events: none;
+    }
+    .chip {
+      position: absolute;
+      z-index: 2;
+      right: 4px;
+      bottom: 4px;
+      font-size: 10px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 999px;
+      padding: 2px 6px;
+      pointer-events: none;
+    }
+
+    .portal {
+      position: absolute;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,.5);
+      background: rgba(111,214,255,.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 10px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.85);
+      cursor: grab;
+      overflow: hidden;
+      z-index: 200000;
+      transition: left 140ms ease, top 140ms ease, width 140ms ease, height 140ms ease, filter 140ms ease;
+    }
+    .portal:active { cursor: grabbing; }
+    .portal.selected { outline: 2px solid #ffe486; }
+    .portal img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; opacity: .95; pointer-events: none; }
+    .portal img.hoverfx { display: none; z-index: 1; }
+    .portal span {
+      position: relative;
+      z-index: 2;
+      background: rgba(0,0,0,.5);
+      padding: 1px 4px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .fixed-settings {
+      position: absolute;
+      z-index: 320000;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 6px;
+      background: rgba(20, 30, 45, .25);
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .fixed-settings img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
+    }
+
+    body.mode-preview .stage {
+      border: none;
+      background: transparent;
+    }
+    body.mode-preview .stage-grid { display: none; }
+    body.mode-preview .island {
+      border: none;
+      background: transparent;
+      padding: 0;
+    }
+    body.mode-preview .island .title,
+    body.mode-preview .chip,
+    body.mode-preview .stage-resizer {
+      display: none !important;
+    }
+    body.mode-preview .portal {
+      border: none;
+      background: transparent;
+    }
+
+    .side {
+      min-width: 0;
+      border-left: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status { font-size: 12px; min-height: 16px; }
+    .status.ok { color: var(--good); }
+    .status.err { color: var(--bad); }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .json-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    textarea {
+      width: 100%;
+      flex: 1;
+      min-height: 180px;
+      resize: none;
+      background: #0d131d;
+      border: 1px solid #2b3a52;
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px;
+      font: 12px/1.4 Consolas, monospace;
+    }
+
+    @media (max-width: 1200px) {
+      .workspace { grid-template-columns: 1fr; }
+      .side { border-left: 0; border-top: 1px solid var(--line); min-height: 260px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="title">ModernWarpMenu Editor</div>
+
+    <div class="group">
+      <button id="btnModeEditor" class="primary">Editor</button>
+      <button id="btnModePreview">Preview</button>
+    </div>
+
+    <div class="group">
+      <button id="btnUndo">Undo</button>
+      <button id="btnRedo">Redo</button>
+      <button id="btnReset" class="warn">Reset</button>
+    </div>
+
+    <div class="group">
+      <label class="inline">Preset
+        <select id="preset">
+          <option value="1920x1080">Desktop 16:9</option>
+          <option value="2560x1440">QHD 1440p</option>
+          <option value="3440x1440">Ultrawide 21:9</option>
+          <option value="3840x2160">4K UHD</option>
+          <option value="1600x900">HD+ 900p</option>
+          <option value="1280x1024">SXGA 5:4</option>
+          <option value="1024x768">XGA 4:3</option>
+        </select>
+      </label>
+      <button id="btnApplyPreset">Apply</button>
+    </div>
+
+    <div class="group">
+      <label class="inline">W <input id="screenW" type="number" min="320" max="4096" value="1920"></label>
+      <label class="inline">H <input id="screenH" type="number" min="320" max="4096" value="1080"></label>
+      <button id="btnResize">Resize</button>
+    </div>
+
+    <div class="group">
+      <label class="inline"><input id="togglePortals" type="checkbox" checked> Portals</label>
+      <label class="inline"><input id="toggleLabels" type="checkbox" checked> Labels</label>
+      <label class="inline"><input id="toggleRuntime" type="checkbox" checked> Runtime Hover</label>
+      <label class="inline"><input id="toggleHideUntilHover" type="checkbox"> Warp labels on hover only</label>
+      <label class="inline"><input id="toggleHideSingleWarpLabel" type="checkbox" checked> Hide single-warp labels</label>
+    </div>
+
+    <div class="spacer"></div>
+    <div id="stageMeta" class="hint"></div>
+  </div>
+
+  <div class="workspace">
+    <div class="canvas-pane">
+      <div class="canvas-shell" id="canvasShell">
+        <div class="viewport-wrap" id="viewportWrap">
+          <div class="viewport" id="viewport">
+            <div class="stage" id="stage"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay">
+        <button id="zoomOut" title="Zoom Out">-</button>
+        <input id="zoomRange" type="range" min="25" max="300" step="5" value="100">
+        <button id="zoomIn" title="Zoom In">+</button>
+        <div id="zoomLabel" class="zoom-label">100%</div>
+        <button id="zoomReset" title="Reset Zoom">1:1</button>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div id="status" class="status"></div>
+      <div class="hint">
+        Drag islands on the 64x36 grid. If Portals are enabled, drag warp points inside islands.
+        JSON auto-updates while dragging.
+      </div>
+      <div class="json-actions">
+        <button id="btnLoadDefault" class="primary">Load Repo layout.json</button>
+        <button id="btnLoadFromText">Load From JSON Pane</button>
+        <button id="btnSaveRepo" class="warn">Save To Repo layout.json</button>
+        <button id="btnDownload">Download JSON</button>
+      </div>
+      <textarea id="jsonInput" spellcheck="false"></textarea>
+    </aside>
+  </div>
+</div>
+
+<script>
+  const SCREEN_GRID_W = 64;
+  const SCREEN_GRID_H = 36;
+  const ISLAND_GRID_SIZE = 40;
+  const DEFAULT_LAYOUT_PATH = "../src/main/generated/assets/modernwarpmenu/layouts/layout.json";
+  const ULTRAWIDE_LAYOUT_PATH = "../src/main/resources/resourcepacks/ultra_wide_layout/assets/modernwarpmenu/layouts/layout.json";
+  const ULTRAWIDE_BASE_RATIO = 3440 / 1440;
+  const ULTRAWIDE_RATIO_TOLERANCE = 0.10;
+  const ULTRAWIDE_MIN_RATIO = ULTRAWIDE_BASE_RATIO * (1 - ULTRAWIDE_RATIO_TOLERANCE);
+  const ULTRAWIDE_MAX_RATIO = ULTRAWIDE_BASE_RATIO * (1 + ULTRAWIDE_RATIO_TOLERANCE);
+  const NON_ULTRAWIDE_MAX_RATIO = ULTRAWIDE_MIN_RATIO - 0.01;
+
+  const state = {
+    raw: null,
+    originalSnapshot: null,
+    active: null,
+    dragSnapshot: null,
+    history: [],
+    historyIndex: -1,
+    islandEntries: new Map(),
+    portalEntries: [],
+    hoveredIsland: null,
+    hoveredPortal: null,
+    mode: "editor",
+    fixedConfigRect: null,
+    fixedSettingsEl: null,
+    gridCanvas: null,
+    lastPointerClientX: null,
+    lastPointerClientY: null,
+    zoom: 1,
+    stageW: 1920,
+    stageH: 1080,
+    loadedLayoutPath: DEFAULT_LAYOUT_PATH,
+    loadedJsonText: "",
+    activePresetValue: "1920x1080"
+  };
+
+  const els = {
+    stage: document.getElementById("stage"),
+    viewport: document.getElementById("viewport"),
+    canvasShell: document.getElementById("canvasShell"),
+    status: document.getElementById("status"),
+    stageMeta: document.getElementById("stageMeta"),
+    jsonInput: document.getElementById("jsonInput"),
+
+    btnLoadDefault: document.getElementById("btnLoadDefault"),
+    btnLoadFromText: document.getElementById("btnLoadFromText"),
+    btnSaveRepo: document.getElementById("btnSaveRepo"),
+    btnDownload: document.getElementById("btnDownload"),
+    btnModeEditor: document.getElementById("btnModeEditor"),
+    btnModePreview: document.getElementById("btnModePreview"),
+    btnUndo: document.getElementById("btnUndo"),
+    btnRedo: document.getElementById("btnRedo"),
+    btnReset: document.getElementById("btnReset"),
+
+    preset: document.getElementById("preset"),
+    btnApplyPreset: document.getElementById("btnApplyPreset"),
+    screenW: document.getElementById("screenW"),
+    screenH: document.getElementById("screenH"),
+    btnResize: document.getElementById("btnResize"),
+
+    togglePortals: document.getElementById("togglePortals"),
+    toggleLabels: document.getElementById("toggleLabels"),
+    toggleRuntime: document.getElementById("toggleRuntime"),
+    toggleHideUntilHover: document.getElementById("toggleHideUntilHover"),
+    toggleHideSingleWarpLabel: document.getElementById("toggleHideSingleWarpLabel"),
+
+    zoomOut: document.getElementById("zoomOut"),
+    zoomIn: document.getElementById("zoomIn"),
+    zoomRange: document.getElementById("zoomRange"),
+    zoomLabel: document.getElementById("zoomLabel"),
+    zoomReset: document.getElementById("zoomReset")
+  };
+
+  function setStatus(msg, ok = true) {
+    els.status.textContent = msg;
+    els.status.className = "status " + (ok ? "ok" : "err");
+  }
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function stageSize() {
+    return { w: state.stageW, h: state.stageH };
+  }
+
+  function updateStageMeta() {
+    const modeLabel = state.mode === "preview" ? "Preview" : "Editor";
+    els.stageMeta.textContent = `${modeLabel}  |  ${state.stageW}x${state.stageH}  |  ${Math.round(state.zoom * 100)}%`;
+  }
+
+  function setMode(mode) {
+    state.mode = mode === "preview" ? "preview" : "editor";
+    document.body.classList.toggle("mode-preview", state.mode === "preview");
+    document.body.classList.toggle("mode-editor", state.mode === "editor");
+    els.btnModeEditor.classList.toggle("primary", state.mode === "editor");
+    els.btnModePreview.classList.toggle("primary", state.mode === "preview");
+    state.hoveredIsland = null;
+    state.hoveredPortal = null;
+    updateStageMeta();
+    if (state.raw) {
+      renderStage();
+      serializeJson();
+    }
+  }
+
+  function applyStageDimensions() {
+    els.stage.style.width = `${state.stageW}px`;
+    els.stage.style.height = `${state.stageH}px`;
+    drawGrid();
+    updateStageMeta();
+  }
+
+  function centerViewport() {
+    requestAnimationFrame(() => {
+      const maxX = Math.max(0, els.canvasShell.scrollWidth - els.canvasShell.clientWidth);
+      const maxY = Math.max(0, els.canvasShell.scrollHeight - els.canvasShell.clientHeight);
+      els.canvasShell.scrollLeft = Math.round(maxX / 2);
+      els.canvasShell.scrollTop = Math.round(maxY / 2);
+    });
+  }
+
+  function updateSandboxPadding() {
+    const padX = Math.max(160, Math.round(els.canvasShell.clientWidth * 0.5));
+    const padY = Math.max(120, Math.round(els.canvasShell.clientHeight * 0.5));
+    document.documentElement.style.setProperty("--sandbox-pad-x", `${padX}px`);
+    document.documentElement.style.setProperty("--sandbox-pad-y", `${padY}px`);
+  }
+
+  function applyZoom() {
+    els.viewport.style.transform = `scale(${state.zoom})`;
+    els.zoomLabel.textContent = `${Math.round(state.zoom * 100)}%`;
+    els.zoomRange.value = String(Math.round(state.zoom * 100));
+    updateStageMeta();
+  }
+
+  function setZoom(percent, anchorClientX = null, anchorClientY = null) {
+    const oldZoom = state.zoom;
+    const nextZoom = clamp(percent / 100, 0.25, 3);
+    if (Math.abs(nextZoom - oldZoom) < 0.0001) {
+      applyZoom();
+      return;
+    }
+
+    const shellRect = els.canvasShell.getBoundingClientRect();
+    const anchorX = anchorClientX ?? (shellRect.left + shellRect.width / 2);
+    const anchorY = anchorClientY ?? (shellRect.top + shellRect.height / 2);
+
+    // Use the real transformed viewport rect as reference so zoom anchoring remains
+    // correct even with centered/padded sandbox space.
+    const viewportRectBefore = els.viewport.getBoundingClientRect();
+    const contentX = (anchorX - viewportRectBefore.left) / oldZoom;
+    const contentY = (anchorY - viewportRectBefore.top) / oldZoom;
+
+    state.zoom = nextZoom;
+    applyZoom();
+
+    const viewportRectAfter = els.viewport.getBoundingClientRect();
+    const desiredX = viewportRectAfter.left + contentX * nextZoom;
+    const desiredY = viewportRectAfter.top + contentY * nextZoom;
+    els.canvasShell.scrollLeft += desiredX - anchorX;
+    els.canvasShell.scrollTop += desiredY - anchorY;
+  }
+
+  function unitSize() {
+    const { w, h } = stageSize();
+    return { ux: w / SCREEN_GRID_W, uy: h / SCREEN_GRID_H };
+  }
+
+  function textureFilePath(location) {
+    if (!location || typeof location !== "string" || !location.includes(":")) return null;
+    const [namespace, relPath] = location.split(":");
+    return `../src/main/resources/assets/${namespace}/${relPath}`;
+  }
+
+  function serializeJson() {
+    if (!state.raw) return;
+    els.jsonInput.value = JSON.stringify(state.raw, null, 2);
+  }
+
+  function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+  function getLayoutPathForPresetValue(presetValue) {
+    return presetValue === "3440x1440" ? ULTRAWIDE_LAYOUT_PATH : DEFAULT_LAYOUT_PATH;
+  }
+
+  function getLayoutPathLabel(layoutPath) {
+    if (layoutPath === ULTRAWIDE_LAYOUT_PATH) {
+      return "ultrawide resource-pack layout.json";
+    }
+    return "default generated layout.json";
+  }
+
+  function getSaveTargetKey() {
+    return isUltrawideLayoutActive() ? "ultrawide" : "default";
+  }
+
+  function getRepoLayoutPathForTarget(targetKey) {
+    if (targetKey === "ultrawide") {
+      return "src/main/resources/resourcepacks/ultra_wide_layout/assets/modernwarpmenu/layouts/layout.json";
+    }
+    return "src/main/generated/assets/modernwarpmenu/layouts/layout.json";
+  }
+
+  function isUltrawideLayoutActive() {
+    return (state.loadedLayoutPath || DEFAULT_LAYOUT_PATH) === ULTRAWIDE_LAYOUT_PATH;
+  }
+
+  function clampStageDimensions(requestedW, requestedH) {
+    let w = clamp(Math.round(requestedW), 320, 4096);
+    let h = clamp(Math.round(requestedH), 320, 4096);
+
+    const minRatio = isUltrawideLayoutActive() ? ULTRAWIDE_MIN_RATIO : null;
+    const maxRatio = isUltrawideLayoutActive() ? ULTRAWIDE_MAX_RATIO : NON_ULTRAWIDE_MAX_RATIO;
+
+    let ratio = w / h;
+    if (minRatio !== null && ratio < minRatio) {
+      const targetW = Math.round(h * minRatio);
+      if (targetW <= 4096) {
+        w = targetW;
+      } else {
+        h = clamp(Math.round(w / minRatio), 320, 4096);
+      }
+      ratio = w / h;
+    }
+
+    if (maxRatio !== null && ratio > maxRatio) {
+      const targetW = Math.round(h * maxRatio);
+      if (targetW >= 320) {
+        w = targetW;
+      } else {
+        h = clamp(Math.round(w / maxRatio), 320, 4096);
+      }
+    }
+
+    return {
+      w: clamp(w, 320, 4096),
+      h: clamp(h, 320, 4096)
+    };
+  }
+
+  function layoutSnapshot() {
+    if (!state.raw || !Array.isArray(state.raw.island_list)) return [];
+    return state.raw.island_list.map(island => ({
+      grid_x: island.grid_x ?? 0,
+      grid_y: island.grid_y ?? 0,
+      warps: Array.isArray(island.warp_list)
+        ? island.warp_list.map(w => ({ grid_x: w.grid_x ?? 0, grid_y: w.grid_y ?? 0 }))
+        : []
+    }));
+  }
+
+  function snapshotsEqual(a, b) {
+    if (!a || !b || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].grid_x !== b[i].grid_x || a[i].grid_y !== b[i].grid_y) return false;
+      if ((a[i].warps?.length || 0) !== (b[i].warps?.length || 0)) return false;
+      for (let j = 0; j < (a[i].warps?.length || 0); j++) {
+        if (a[i].warps[j].grid_x !== b[i].warps[j].grid_x || a[i].warps[j].grid_y !== b[i].warps[j].grid_y) return false;
+      }
+    }
+    return true;
+  }
+
+  function hasUnsavedChanges() {
+    if (!state.raw) return false;
+    const baseSnapshot = state.originalSnapshot || [];
+    const currentSnapshot = layoutSnapshot();
+    const layoutChanged = !snapshotsEqual(baseSnapshot, currentSnapshot);
+    const canonicalJson = JSON.stringify(state.raw, null, 2);
+    const paneChanged = els.jsonInput.value.trim() !== canonicalJson.trim();
+    return layoutChanged || paneChanged;
+  }
+
+  function applySnapshot(snapshot) {
+    if (!state.raw || !snapshot || snapshot.length !== state.raw.island_list.length) return;
+    state.raw.island_list.forEach((island, i) => {
+      island.grid_x = snapshot[i].grid_x;
+      island.grid_y = snapshot[i].grid_y;
+      if (Array.isArray(island.warp_list) && Array.isArray(snapshot[i].warps)) {
+        island.warp_list.forEach((w, j) => {
+          if (snapshot[i].warps[j]) {
+            w.grid_x = snapshot[i].warps[j].grid_x;
+            w.grid_y = snapshot[i].warps[j].grid_y;
+          }
+        });
+      }
+    });
+  }
+
+  function pushHistory() {
+    const snap = layoutSnapshot();
+    if (!snap.length) return;
+    const current = state.history[state.historyIndex];
+    if (current && snapshotsEqual(current, snap)) return;
+    state.history = state.history.slice(0, state.historyIndex + 1);
+    state.history.push(snap);
+    state.historyIndex = state.history.length - 1;
+    updateHistoryButtons();
+  }
+
+  function updateHistoryButtons() {
+    els.btnUndo.disabled = state.historyIndex <= 0;
+    els.btnRedo.disabled = state.historyIndex < 0 || state.historyIndex >= state.history.length - 1;
+  }
+
+  function undo() {
+    if (state.historyIndex <= 0) return;
+    state.historyIndex--;
+    applySnapshot(state.history[state.historyIndex]);
+    renderStage();
+    serializeJson();
+    updateHistoryButtons();
+    setStatus("Undo applied.", true);
+  }
+
+  function redo() {
+    if (state.historyIndex >= state.history.length - 1) return;
+    state.historyIndex++;
+    applySnapshot(state.history[state.historyIndex]);
+    renderStage();
+    serializeJson();
+    updateHistoryButtons();
+    setStatus("Redo applied.", true);
+  }
+
+  function clearSelection() {
+    els.stage.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"));
+  }
+
+  function pointerToStage(ev) {
+    const stageRect = els.stage.getBoundingClientRect();
+    return {
+      x: (ev.clientX - stageRect.left) / state.zoom,
+      y: (ev.clientY - stageRect.top) / state.zoom
+    };
+  }
+
+  function islandRect(island) {
+    const { ux, uy } = unitSize();
+    const sw = stageSize().w;
+    const x = Math.round((island.grid_x ?? 0) * ux);
+    const y = Math.round((island.grid_y ?? 0) * uy);
+    const w = Math.round((island.width_percentage ?? 0.1) * sw);
+    const texW = island.texture?.width || 1;
+    const texH = island.texture?.height || 1;
+    const h = Math.round(texH * (w / texW));
+    return { x, y, w, h };
+  }
+
+  function buttonRect(button) {
+    if (!button || !button.texture) return null;
+    const { ux, uy } = unitSize();
+    const sw = stageSize().w;
+    const x = Math.round((button.grid_x ?? 0) * ux);
+    const y = Math.round((button.grid_y ?? 0) * uy);
+    const w = Math.round((button.width_percentage ?? 0.03) * sw);
+    const texW = button.texture?.width || 1;
+    const texH = button.texture?.height || 1;
+    const h = Math.round(texH * (w / texW));
+    return { x, y, w, h };
+  }
+
+  function rectIntersects(a, b) {
+    if (!a || !b) return false;
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+
+  function renderFixedSettingsButton() {
+    const configButton = state.raw?.config_button;
+    const rect = buttonRect(configButton);
+    if (!rect || !configButton?.texture?.location) {
+      state.fixedConfigRect = null;
+      state.fixedSettingsEl = null;
+      return;
+    }
+    state.fixedConfigRect = rect;
+
+    const el = document.createElement("div");
+    el.className = "fixed-settings";
+    el.style.left = `${rect.x}px`;
+    el.style.top = `${rect.y}px`;
+    el.style.width = `${rect.w}px`;
+    el.style.height = `${rect.h}px`;
+    state.fixedSettingsEl = el;
+
+    const texPath = textureFilePath(configButton.texture.location);
+    if (texPath) {
+      const img = document.createElement("img");
+      img.src = texPath;
+      img.alt = "Settings";
+      img.onerror = () => img.remove();
+      el.appendChild(img);
+    }
+    els.stage.appendChild(el);
+  }
+
+  function updateFixedSettingsButtonGeometry() {
+    const configButton = state.raw?.config_button;
+    const rect = buttonRect(configButton);
+    if (!rect) {
+      state.fixedConfigRect = null;
+      return;
+    }
+    state.fixedConfigRect = rect;
+    if (state.fixedSettingsEl) {
+      state.fixedSettingsEl.style.left = `${rect.x}px`;
+      state.fixedSettingsEl.style.top = `${rect.y}px`;
+      state.fixedSettingsEl.style.width = `${rect.w}px`;
+      state.fixedSettingsEl.style.height = `${rect.h}px`;
+    }
+  }
+
+  function portalSize() {
+    const icon = state.raw?.warp_icon;
+    const sw = stageSize().w;
+    if (!icon || !icon.texture) return { w: 16, h: 16 };
+    const w = Math.max(10, Math.round((icon.width_percentage ?? 0.02) * sw));
+    const h = Math.max(10, Math.round(icon.texture.height * (w / (icon.texture.width || 1))));
+    return { w, h };
+  }
+
+  function renderIslands() {
+    state.islandEntries.clear();
+    const sorted = [...state.raw.island_list].sort((a, b) => (a.z_level ?? 0) - (b.z_level ?? 0));
+
+    sorted.forEach((island, idx) => {
+      const rect = islandRect(island);
+      const el = document.createElement("div");
+      el.className = "island";
+      el.style.left = `${rect.x}px`;
+      el.style.top = `${rect.y}px`;
+      el.style.width = `${rect.w}px`;
+      el.style.height = `${rect.h}px`;
+      el.style.zIndex = String((island.z_level ?? 0) * 100 + idx);
+
+      const texPath = textureFilePath(island.texture?.location);
+      if (texPath) {
+        const img = document.createElement("img");
+        img.className = "img";
+        img.alt = island.name || "island";
+        img.src = texPath;
+        img.onerror = () => img.remove();
+        el.appendChild(img);
+      }
+
+      const title = document.createElement("div");
+      title.className = "title";
+      title.textContent = island.name || `Island_${idx}`;
+      title.style.display = els.toggleLabels.checked ? "block" : "none";
+      el.appendChild(title);
+
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = `${island.grid_x ?? 0},${island.grid_y ?? 0}`;
+      chip.style.display = els.toggleLabels.checked ? "block" : "none";
+      el.appendChild(chip);
+
+      els.stage.appendChild(el);
+      state.islandEntries.set(island, { el, rect, renderRect: rect, chip, title });
+      makeIslandDraggable(island);
+    });
+  }
+
+  function renderPortals() {
+    state.portalEntries = [];
+    if (!els.togglePortals.checked) return;
+
+    const iconPath = textureFilePath(state.raw?.warp_icon?.texture?.location);
+    const hoverIconPath = textureFilePath(state.raw?.warp_icon?.hover_effect_texture?.location);
+    const pSize = portalSize();
+
+    state.raw.island_list.forEach(island => {
+      const iEntry = state.islandEntries.get(island);
+      if (!iEntry || !Array.isArray(island.warp_list)) return;
+
+      const iux = iEntry.rect.w / ISLAND_GRID_SIZE;
+      const iuy = iEntry.rect.h / ISLAND_GRID_SIZE;
+
+      island.warp_list.forEach((warp, idx) => {
+        const px = Math.round(iEntry.rect.x + (warp.grid_x ?? 0) * iux);
+        const py = Math.round(iEntry.rect.y + (warp.grid_y ?? 0) * iuy);
+
+        const el = document.createElement("div");
+        el.className = "portal";
+        el.style.left = `${px}px`;
+        el.style.top = `${py}px`;
+        el.style.width = `${pSize.w}px`;
+        el.style.height = `${pSize.h}px`;
+
+        if (iconPath) {
+          const img = document.createElement("img");
+          img.src = iconPath;
+          img.alt = "portal";
+          img.onerror = () => img.remove();
+          el.appendChild(img);
+        }
+        if (hoverIconPath) {
+          const hoverImg = document.createElement("img");
+          hoverImg.className = "hoverfx";
+          hoverImg.src = hoverIconPath;
+          hoverImg.alt = "portal-hover";
+          hoverImg.onerror = () => hoverImg.remove();
+          el.appendChild(hoverImg);
+        }
+
+        const label = document.createElement("span");
+        label.textContent = (warp.display_name || warp.command_name || `${idx}`).toString().slice(0, 12);
+        label.style.display = els.toggleLabels.checked ? "block" : "none";
+        el.appendChild(label);
+
+        els.stage.appendChild(el);
+        const hoverImgEl = el.querySelector("img.hoverfx");
+        state.portalEntries.push({ el, island, warp, label, hoverImgEl, rect: { x: px, y: py, w: pSize.w, h: pSize.h } });
+        makePortalDraggable(island, warp);
+      });
+    });
+  }
+
+  function updatePortalPositionsForIsland(island) {
+    if (!els.togglePortals.checked) return;
+    const iEntry = state.islandEntries.get(island);
+    if (!iEntry) return;
+
+    const pSize = portalSize();
+    const iux = iEntry.rect.w / ISLAND_GRID_SIZE;
+    const iuy = iEntry.rect.h / ISLAND_GRID_SIZE;
+
+    state.portalEntries.forEach(entry => {
+      if (entry.island !== island) return;
+      const px = Math.round(iEntry.rect.x + (entry.warp.grid_x ?? 0) * iux);
+      const py = Math.round(iEntry.rect.y + (entry.warp.grid_y ?? 0) * iuy);
+      entry.el.style.left = `${px}px`;
+      entry.el.style.top = `${py}px`;
+      entry.el.style.width = `${pSize.w}px`;
+      entry.el.style.height = `${pSize.h}px`;
+    });
+  }
+
+  function ensureGridLayer() {
+    if (state.gridCanvas && state.gridCanvas.parentElement === els.stage) return state.gridCanvas;
+    const canvas = document.createElement("canvas");
+    canvas.className = "stage-grid";
+    els.stage.prepend(canvas);
+    state.gridCanvas = canvas;
+    return canvas;
+  }
+
+  function drawGrid() {
+    const canvas = state.gridCanvas;
+    if (!canvas) return;
+
+    const w = Math.max(1, state.stageW);
+    const h = Math.max(1, state.stageH);
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const pixelW = Math.max(1, Math.round(w * dpr));
+    const pixelH = Math.max(1, Math.round(h * dpr));
+
+    if (canvas.width !== pixelW) canvas.width = pixelW;
+    if (canvas.height !== pixelH) canvas.height = pixelH;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = "rgba(255,255,255,0.1)";
+    ctx.lineWidth = 1;
+
+    const stepX = w / SCREEN_GRID_W;
+    const stepY = h / SCREEN_GRID_H;
+
+    ctx.beginPath();
+    for (let i = 1; i < SCREEN_GRID_W; i++) {
+      const x = Math.round(i * stepX) + 0.5;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+    }
+    for (let i = 1; i < SCREEN_GRID_H; i++) {
+      const y = Math.round(i * stepY) + 0.5;
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+    }
+    ctx.stroke();
+  }
+
+  function renderStage() {
+    els.stage.innerHTML = "";
+    ensureGridLayer();
+    drawGrid();
+    state.hoveredIsland = null;
+    state.hoveredPortal = null;
+    renderIslands();
+    renderPortals();
+    renderFixedSettingsButton();
+    attachStageResizer();
+    applyRuntimeVisuals();
+    updateHistoryButtons();
+    setStatus(`Loaded ${state.raw.island_list.length} islands${els.togglePortals.checked ? " + portals" : ""}.`, true);
+  }
+
+  function refreshGeometryOnly() {
+    state.raw.island_list.forEach(island => {
+      const entry = state.islandEntries.get(island);
+      if (!entry) return;
+      const r = islandRect(island);
+      entry.rect = r;
+      entry.chip.textContent = `${island.grid_x ?? 0},${island.grid_y ?? 0}`;
+    });
+    updateFixedSettingsButtonGeometry();
+    applyRuntimeVisuals();
+  }
+
+  function getIslandScale(island) {
+    if (state.mode !== "preview" || !els.toggleRuntime.checked) return 1;
+    return state.hoveredIsland === island ? 1.1 : 1;
+  }
+
+  function applyRuntimeVisuals() {
+    const runtime = state.mode === "preview" && els.toggleRuntime.checked;
+    const showIslandLabels = state.mode === "editor" && els.toggleLabels.checked;
+    const showPortalLabels = state.mode === "preview" ? true : els.toggleLabels.checked;
+    const hideUntilHover = els.toggleHideUntilHover.checked;
+    const hideSingleWarpLabel = els.toggleHideSingleWarpLabel.checked;
+
+    state.islandEntries.forEach((entry, island) => {
+      const scale = getIslandScale(island);
+      const b = entry.rect;
+      const w = Math.round(b.w * scale);
+      const h = Math.round(b.h * scale);
+      const x = Math.round(b.x - (w - b.w) / 2);
+      const y = Math.round(b.y - (h - b.h) / 2);
+      entry.renderRect = { x, y, w, h };
+      entry.el.style.left = `${x}px`;
+      entry.el.style.top = `${y}px`;
+      entry.el.style.width = `${w}px`;
+      entry.el.style.height = `${h}px`;
+      entry.el.style.setProperty("--btn-brightness", runtime ? (state.hoveredIsland === island ? "1" : "0.9") : "1");
+      entry.title.style.display = showIslandLabels ? "block" : "none";
+      entry.chip.style.display = showIslandLabels ? "block" : "none";
+    });
+
+    if (!els.togglePortals.checked) return;
+    const pBase = portalSize();
+    state.portalEntries.forEach(entry => {
+      const iEntry = state.islandEntries.get(entry.island);
+      if (!iEntry) return;
+      const iRect = iEntry.renderRect || iEntry.rect;
+      const scale = getIslandScale(entry.island);
+      const iux = iRect.w / ISLAND_GRID_SIZE;
+      const iuy = iRect.h / ISLAND_GRID_SIZE;
+      const w = Math.round(pBase.w * scale);
+      const h = Math.round(pBase.h * scale);
+      const x = Math.round(iRect.x + (entry.warp.grid_x ?? 0) * iux);
+      const y = Math.round(iRect.y + (entry.warp.grid_y ?? 0) * iuy);
+
+      entry.rect = { x, y, w, h };
+      entry.el.style.left = `${x}px`;
+      entry.el.style.top = `${y}px`;
+      entry.el.style.width = `${w}px`;
+      entry.el.style.height = `${h}px`;
+      entry.el.style.setProperty("--btn-brightness", runtime ? (state.hoveredPortal === entry ? "1" : "0.9") : "1");
+      if (entry.hoverImgEl) {
+        entry.hoverImgEl.style.display = runtime && state.hoveredPortal === entry ? "block" : "none";
+      }
+
+      const hasSingleWarp = (entry.island.warp_list?.length || 0) === 1;
+      const visibleByHover = !hideUntilHover || state.hoveredIsland === entry.island;
+      const visibleBySingle = !(hideSingleWarpLabel && hasSingleWarp);
+      const editorVisibility = showPortalLabels && visibleByHover && visibleBySingle;
+      const previewVisibility = showPortalLabels;
+      entry.label.style.display = state.mode === "preview"
+          ? (previewVisibility ? "block" : "none")
+          : (editorVisibility ? "block" : "none");
+    });
+  }
+
+  function pointInRect(x, y, r) {
+    return x >= r.x && y >= r.y && x <= r.x + r.w && y <= r.y + r.h;
+  }
+
+  function updateHoverFromPointer(ev) {
+    if (!state.raw || state.active || state.mode !== "preview" || !els.toggleRuntime.checked) return;
+    const p = pointerToStage(ev);
+
+    let hoveredIsland = null;
+    let hoveredZ = -Infinity;
+    state.islandEntries.forEach((entry, island) => {
+      const r = entry.renderRect || entry.rect;
+      if (pointInRect(p.x, p.y, r)) {
+        const z = parseInt(entry.el.style.zIndex || "0", 10);
+        if (z >= hoveredZ) {
+          hoveredZ = z;
+          hoveredIsland = island;
+        }
+      }
+    });
+
+    let hoveredPortal = null;
+    if (els.togglePortals.checked) {
+      for (const entry of state.portalEntries) {
+        if (pointInRect(p.x, p.y, entry.rect)) {
+          hoveredPortal = entry;
+          break;
+        }
+      }
+    }
+
+    if (state.hoveredIsland !== hoveredIsland || state.hoveredPortal !== hoveredPortal) {
+      state.hoveredIsland = hoveredIsland;
+      state.hoveredPortal = hoveredPortal;
+      applyRuntimeVisuals();
+    }
+  }
+
+  function attachStageResizer() {
+    if (state.mode !== "editor") return;
+    const handle = document.createElement("div");
+    handle.className = "stage-resizer";
+    handle.title = "Drag to resize viewport";
+    els.stage.appendChild(handle);
+
+    function pointerDown(ev) {
+      ev.preventDefault();
+      const startX = ev.clientX;
+      const startY = ev.clientY;
+      const startW = state.stageW;
+      const startH = state.stageH;
+      handle.setPointerCapture(ev.pointerId);
+
+      function pointerMove(moveEv) {
+        const dx = (moveEv.clientX - startX) / state.zoom;
+        const dy = (moveEv.clientY - startY) / state.zoom;
+        const clampedSize = clampStageDimensions(startW + dx, startH + dy);
+        state.stageW = clampedSize.w;
+        state.stageH = clampedSize.h;
+        els.screenW.value = String(state.stageW);
+        els.screenH.value = String(state.stageH);
+        applyStageDimensions();
+        if (state.raw) {
+          refreshGeometryOnly();
+        }
+      }
+
+      function pointerUp(upEv) {
+        handle.releasePointerCapture(upEv.pointerId);
+        handle.removeEventListener("pointermove", pointerMove);
+        handle.removeEventListener("pointerup", pointerUp);
+        handle.removeEventListener("pointercancel", pointerUp);
+      }
+
+      handle.addEventListener("pointermove", pointerMove);
+      handle.addEventListener("pointerup", pointerUp);
+      handle.addEventListener("pointercancel", pointerUp);
+    }
+
+    handle.addEventListener("pointerdown", pointerDown);
+  }
+
+  function makeIslandDraggable(island) {
+    const entry = state.islandEntries.get(island);
+    const el = entry.el;
+
+    function pointerDown(ev) {
+      if (state.mode !== "editor") return;
+      ev.preventDefault();
+      clearSelection();
+      el.classList.add("selected");
+      state.dragSnapshot = layoutSnapshot();
+
+      const p = pointerToStage(ev);
+      state.active = {
+        type: "island",
+        island,
+        el,
+        offsetX: p.x - entry.rect.x,
+        offsetY: p.y - entry.rect.y
+      };
+
+      el.setPointerCapture(ev.pointerId);
+      el.addEventListener("pointermove", pointerMove);
+      el.addEventListener("pointerup", pointerUp);
+      el.addEventListener("pointercancel", pointerUp);
+    }
+
+    function pointerMove(ev) {
+      if (!state.active || state.active.type !== "island") return;
+      const { ux, uy } = unitSize();
+      const p = pointerToStage(ev);
+      const localX = p.x - state.active.offsetX;
+      const localY = p.y - state.active.offsetY;
+
+      const nextGridX = clamp(Math.round(localX / ux), 0, SCREEN_GRID_W);
+      const nextGridY = clamp(Math.round(localY / uy), 0, SCREEN_GRID_H);
+      const originalGridX = island.grid_x;
+      const originalGridY = island.grid_y;
+      island.grid_x = nextGridX;
+      island.grid_y = nextGridY;
+      const candidateRect = islandRect(island);
+
+      if (rectIntersects(candidateRect, state.fixedConfigRect)) {
+        island.grid_x = originalGridX;
+        island.grid_y = originalGridY;
+        setStatus("Blocked: settings button area is reserved.", false);
+        return;
+      }
+
+      const r = islandRect(island);
+      entry.rect = r;
+      entry.chip.textContent = `${island.grid_x},${island.grid_y}`;
+      applyRuntimeVisuals();
+      serializeJson();
+    }
+
+    function pointerUp(ev) {
+      if (!state.active) return;
+      el.releasePointerCapture(ev.pointerId);
+      el.removeEventListener("pointermove", pointerMove);
+      el.removeEventListener("pointerup", pointerUp);
+      el.removeEventListener("pointercancel", pointerUp);
+      state.active = null;
+      if (!snapshotsEqual(state.dragSnapshot, layoutSnapshot())) pushHistory();
+      state.dragSnapshot = null;
+    }
+
+    el.addEventListener("pointerdown", pointerDown);
+  }
+
+  function makePortalDraggable(island, warp) {
+    const entry = state.portalEntries.find(p => p.island === island && p.warp === warp);
+    if (!entry) return;
+    const el = entry.el;
+
+    function pointerDown(ev) {
+      if (state.mode !== "editor") return;
+      ev.preventDefault();
+      clearSelection();
+      el.classList.add("selected");
+      state.dragSnapshot = layoutSnapshot();
+
+      const p = pointerToStage(ev);
+      const rect = {
+        x: parseFloat(el.style.left) || 0,
+        y: parseFloat(el.style.top) || 0
+      };
+
+      state.active = {
+        type: "portal",
+        island,
+        warp,
+        el,
+        offsetX: p.x - rect.x,
+        offsetY: p.y - rect.y
+      };
+
+      el.setPointerCapture(ev.pointerId);
+      el.addEventListener("pointermove", pointerMove);
+      el.addEventListener("pointerup", pointerUp);
+      el.addEventListener("pointercancel", pointerUp);
+    }
+
+    function pointerMove(ev) {
+      if (!state.active || state.active.type !== "portal") return;
+      const iEntry = state.islandEntries.get(island);
+      if (!iEntry) return;
+
+      const p = pointerToStage(ev);
+      const localX = p.x - state.active.offsetX;
+      const localY = p.y - state.active.offsetY;
+      const islandRectForWarp = iEntry.renderRect || iEntry.rect;
+      const relX = localX - islandRectForWarp.x;
+      const relY = localY - islandRectForWarp.y;
+
+      const iux = islandRectForWarp.w / ISLAND_GRID_SIZE;
+      const iuy = islandRectForWarp.h / ISLAND_GRID_SIZE;
+
+      // Keep the full portal icon inside the island render bounds.
+      const portalW = entry.rect?.w ?? portalSize().w;
+      const portalH = entry.rect?.h ?? portalSize().h;
+      const maxGridX = Math.max(0, Math.floor((islandRectForWarp.w - portalW) / iux));
+      const maxGridY = Math.max(0, Math.floor((islandRectForWarp.h - portalH) / iuy));
+
+      warp.grid_x = clamp(Math.round(relX / iux), 0, maxGridX);
+      warp.grid_y = clamp(Math.round(relY / iuy), 0, maxGridY);
+
+      const px = Math.round(islandRectForWarp.x + warp.grid_x * iux);
+      const py = Math.round(islandRectForWarp.y + warp.grid_y * iuy);
+      entry.rect.x = px;
+      entry.rect.y = py;
+      applyRuntimeVisuals();
+      serializeJson();
+    }
+
+    function pointerUp(ev) {
+      if (!state.active) return;
+      el.releasePointerCapture(ev.pointerId);
+      el.removeEventListener("pointermove", pointerMove);
+      el.removeEventListener("pointerup", pointerUp);
+      el.removeEventListener("pointercancel", pointerUp);
+      state.active = null;
+      if (!snapshotsEqual(state.dragSnapshot, layoutSnapshot())) pushHistory();
+      state.dragSnapshot = null;
+    }
+
+    el.addEventListener("pointerdown", pointerDown);
+  }
+
+  async function loadDefaultJson(pathOverride = null) {
+    const targetPath = pathOverride || getLayoutPathForPresetValue(els.preset.value);
+    try {
+      const response = await fetch(targetPath, { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      els.jsonInput.value = await response.text();
+      if (!loadFromText(targetPath)) return false;
+      setStatus(`Loaded ${targetPath}`, true);
+      return true;
+    } catch (e) {
+      setStatus(`Failed to fetch ${targetPath}: ${e.message}`, false);
+      return false;
+    }
+  }
+
+  function loadFromText(sourcePath = null) {
+    try {
+      const parsed = JSON.parse(els.jsonInput.value);
+      if (!parsed || !Array.isArray(parsed.island_list)) {
+        throw new Error("Expected an object with island_list array.");
+      }
+      state.raw = parsed;
+      state.originalSnapshot = deepClone(layoutSnapshot());
+      const canonicalJson = JSON.stringify(state.raw, null, 2);
+      els.jsonInput.value = canonicalJson;
+      state.loadedJsonText = canonicalJson;
+      if (sourcePath) {
+        state.loadedLayoutPath = sourcePath;
+      }
+      state.history = [];
+      state.historyIndex = -1;
+      renderStage();
+      serializeJson();
+      pushHistory();
+      updateSandboxPadding();
+      centerViewport();
+      return true;
+    } catch (e) {
+      setStatus(`Invalid JSON: ${e.message}`, false);
+      return false;
+    }
+  }
+
+  function downloadJson() {
+    if (!state.raw) return;
+    serializeJson();
+    const blob = new Blob([els.jsonInput.value], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "layout-edited.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function saveToRepoLayoutFile() {
+    if (!state.raw) {
+      setStatus("Nothing loaded to save.", false);
+      return;
+    }
+    try {
+      serializeJson();
+      const targetKey = getSaveTargetKey();
+      const repoPath = getRepoLayoutPathForTarget(targetKey);
+      const confirmed = window.confirm(
+        `WARNING: This will OVERWRITE ${repoPath}.\n` +
+        "Any existing contents will be permanently lost forever. Continue?"
+      );
+      if (!confirmed) {
+        setStatus("Save cancelled.", true);
+        return;
+      }
+      const response = await fetch(`/api/save-layout?target=${encodeURIComponent(targetKey)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: els.jsonInput.value
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      setStatus(`Saved to repo path: ${repoPath}`, true);
+    } catch (e) {
+      setStatus(
+        `Save failed: ${e.message}. Start tools/layout-editor-server.ps1 and open editor from that server.`,
+        false
+      );
+    }
+  }
+
+  function resetPositions() {
+    if (!state.raw || !state.originalSnapshot) return;
+    applySnapshot(deepClone(state.originalSnapshot));
+    renderStage();
+    serializeJson();
+    pushHistory();
+    setStatus("Reset to loaded state.", true);
+  }
+
+  function resizeStage() {
+    const requestedW = parseInt(els.screenW.value || "1920", 10);
+    const requestedH = parseInt(els.screenH.value || "1080", 10);
+    const clampedSize = clampStageDimensions(requestedW, requestedH);
+    state.stageW = clampedSize.w;
+    state.stageH = clampedSize.h;
+    els.screenW.value = String(state.stageW);
+    els.screenH.value = String(state.stageH);
+    applyStageDimensions();
+    if (state.raw) {
+      renderStage();
+      serializeJson();
+    }
+    updateSandboxPadding();
+    centerViewport();
+  }
+
+  function applyPreset() {
+    const selectedPreset = els.preset.value || "1920x1080";
+    const [w, h] = selectedPreset.split("x").map(v => parseInt(v, 10));
+    if (!w || !h) return;
+    const targetLayoutPath = getLayoutPathForPresetValue(selectedPreset);
+    const currentLayoutPath = state.loadedLayoutPath || DEFAULT_LAYOUT_PATH;
+    const sourceWillChange = targetLayoutPath !== currentLayoutPath;
+    if (sourceWillChange) {
+      const fromLabel = getLayoutPathLabel(currentLayoutPath);
+      const toLabel = getLayoutPathLabel(targetLayoutPath);
+      const warnMessage = hasUnsavedChanges()
+        ? `This preset switches layout source:\n${fromLabel} -> ${toLabel}\n\nUnsaved changes in the current JSON will be lost.\n\nPress OK to discard and load the new layout, or Cancel to keep current.`
+        : `This preset switches layout source:\n${fromLabel} -> ${toLabel}\n\nPress OK to load the new layout, or Cancel to keep current.`;
+      if (!window.confirm(warnMessage)) {
+        els.preset.value = state.activePresetValue;
+        setStatus("Preset switch cancelled.", true);
+        return;
+      }
+      loadDefaultJson(targetLayoutPath).then(ok => {
+        if (!ok) {
+          els.preset.value = state.activePresetValue;
+          return;
+        }
+        els.screenW.value = String(w);
+        els.screenH.value = String(h);
+        resizeStage();
+        state.activePresetValue = selectedPreset;
+      });
+      return;
+    }
+    els.screenW.value = String(w);
+    els.screenH.value = String(h);
+    resizeStage();
+    state.activePresetValue = selectedPreset;
+  }
+
+  els.btnLoadDefault.addEventListener("click", loadDefaultJson);
+  els.btnLoadFromText.addEventListener("click", loadFromText);
+  els.btnSaveRepo.addEventListener("click", saveToRepoLayoutFile);
+  els.btnDownload.addEventListener("click", downloadJson);
+  els.btnModeEditor.addEventListener("click", () => setMode("editor"));
+  els.btnModePreview.addEventListener("click", () => setMode("preview"));
+  els.btnUndo.addEventListener("click", undo);
+  els.btnRedo.addEventListener("click", redo);
+  els.btnReset.addEventListener("click", resetPositions);
+
+  els.btnApplyPreset.addEventListener("click", applyPreset);
+  els.btnResize.addEventListener("click", resizeStage);
+
+  els.togglePortals.addEventListener("change", () => { if (state.raw) renderStage(); });
+  els.toggleLabels.addEventListener("change", () => { if (state.raw) applyRuntimeVisuals(); });
+  els.toggleRuntime.addEventListener("change", () => {
+    state.hoveredIsland = null;
+    state.hoveredPortal = null;
+    if (state.raw) applyRuntimeVisuals();
+  });
+  els.toggleHideUntilHover.addEventListener("change", () => { if (state.raw) applyRuntimeVisuals(); });
+  els.toggleHideSingleWarpLabel.addEventListener("change", () => { if (state.raw) applyRuntimeVisuals(); });
+
+  els.zoomOut.addEventListener("click", () => setZoom(
+    Math.round(state.zoom * 100) - 10,
+    state.lastPointerClientX,
+    state.lastPointerClientY
+  ));
+  els.zoomIn.addEventListener("click", () => setZoom(
+    Math.round(state.zoom * 100) + 10,
+    state.lastPointerClientX,
+    state.lastPointerClientY
+  ));
+  els.zoomReset.addEventListener("click", () => setZoom(
+    100,
+    state.lastPointerClientX,
+    state.lastPointerClientY
+  ));
+  els.zoomRange.addEventListener("input", () => setZoom(
+    parseInt(els.zoomRange.value, 10) || 100,
+    state.lastPointerClientX,
+    state.lastPointerClientY
+  ));
+  els.canvasShell.addEventListener("pointermove", (ev) => {
+    state.lastPointerClientX = ev.clientX;
+    state.lastPointerClientY = ev.clientY;
+  });
+  els.canvasShell.addEventListener("wheel", (ev) => {
+    if (ev.ctrlKey) {
+      ev.preventDefault();
+      const zoomStep = ev.deltaY < 0 ? 8 : -8;
+      setZoom(Math.round(state.zoom * 100) + zoomStep, ev.clientX, ev.clientY);
+      return;
+    }
+    if (ev.shiftKey) {
+      ev.preventDefault();
+      els.canvasShell.scrollLeft += ev.deltaY + ev.deltaX;
+    }
+  }, { passive: false });
+  els.stage.addEventListener("pointermove", updateHoverFromPointer);
+  els.stage.addEventListener("pointerleave", () => {
+    if (!els.toggleRuntime.checked) return;
+    state.hoveredIsland = null;
+    state.hoveredPortal = null;
+    applyRuntimeVisuals();
+  });
+
+  document.addEventListener("keydown", (ev) => {
+    const target = ev.target;
+    const isTypingTarget = target instanceof HTMLElement &&
+      (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable);
+    if (!isTypingTarget && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+      const key = ev.key.toLowerCase();
+      if (key === "p") {
+        ev.preventDefault();
+        setMode("preview");
+        return;
+      }
+      if (key === "e") {
+        ev.preventDefault();
+        setMode("editor");
+        return;
+      }
+    }
+
+    if ((ev.ctrlKey || ev.metaKey) && !ev.shiftKey && ev.key.toLowerCase() === "z") {
+      ev.preventDefault();
+      undo();
+    } else if (((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "y") ||
+      ((ev.ctrlKey || ev.metaKey) && ev.shiftKey && ev.key.toLowerCase() === "z")) {
+      ev.preventDefault();
+      redo();
+    }
+  });
+
+  applyStageDimensions();
+  applyZoom();
+  updateSandboxPadding();
+  setMode("editor");
+  loadDefaultJson();
+  centerViewport();
+  window.addEventListener("resize", () => {
+    updateSandboxPadding();
+    centerViewport();
+  });
+</script>
+</body>
+</html>

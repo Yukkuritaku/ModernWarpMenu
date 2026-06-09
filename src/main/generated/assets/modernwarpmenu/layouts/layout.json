@@ -2,7 +2,7 @@
   "type": "overworld",
   "config_button": {
     "grid_x": 60,
-    "grid_y": 31,
+    "grid_y": 30,
     "texture": {
       "height": 512,
       "location": "modernwarpmenu:icon.png",
@@ -13,7 +13,7 @@
   "island_list": [
     {
       "grid_x": 24,
-      "grid_y": 17,
+      "grid_y": 18,
       "hover_effect_texture": {
         "height": 1340,
         "location": "modernwarpmenu:textures/gui/islands/hub.png",
@@ -205,8 +205,8 @@
       "z_level": 2
     },
     {
-      "grid_x": 32,
-      "grid_y": 9,
+      "grid_x": 31,
+      "grid_y": 11,
       "hover_effect_texture": {
         "height": 493,
         "location": "modernwarpmenu:textures/gui/islands/gold_mine.png",
@@ -230,7 +230,7 @@
       "z_level": 1
     },
     {
-      "grid_x": 39,
+      "grid_x": 38,
       "grid_y": 2,
       "hover_effect_texture": {
         "height": 509,
@@ -285,8 +285,8 @@
       "z_level": 2
     },
     {
-      "grid_x": 43,
-      "grid_y": 27,
+      "grid_x": 39,
+      "grid_y": 30,
       "hover_effect_texture": {
         "height": 488,
         "location": "modernwarpmenu:textures/gui/islands/private_island.png",
@@ -310,8 +310,8 @@
       "z_level": 1
     },
     {
-      "grid_x": 48,
-      "grid_y": 27,
+      "grid_x": 43,
+      "grid_y": 25,
       "hover_effect_texture": {
         "height": 569,
         "location": "modernwarpmenu:textures/gui/islands/garden.png",
@@ -336,7 +336,7 @@
     },
     {
       "grid_x": 41,
-      "grid_y": 16,
+      "grid_y": 15,
       "hover_effect_texture": {
         "height": 1080,
         "location": "modernwarpmenu:textures/gui/islands/barn.png",
@@ -361,7 +361,7 @@
     },
     {
       "grid_x": 50,
-      "grid_y": 2,
+      "grid_y": 1,
       "hover_effect_texture": {
         "height": 604,
         "location": "modernwarpmenu:textures/gui/islands/mushroom_desert.png",
@@ -465,7 +465,7 @@
       "z_level": 0
     },
     {
-      "grid_x": 49,
+      "grid_x": 51,
       "grid_y": 19,
       "hover_effect_texture": {
         "height": 875,
@@ -490,18 +490,18 @@
       "z_level": 0
     },
     {
-      "grid_x": 53,
-      "grid_y": 10,
+      "grid_x": 54,
+      "grid_y": 9,
       "hover_effect_texture": {
-        "height": 1000,
+        "height": 1336,
         "location": "modernwarpmenu:textures/gui/islands/lotus.png",
-        "width": 1000
+        "width": 1280
       },
-      "name": "Lotus",
+      "name": "Lotus Atoll",
       "texture": {
-        "height": 1000,
+        "height": 1336,
         "location": "modernwarpmenu:textures/gui/islands/lotus.png",
-        "width": 1000
+        "width": 1280
       },
       "warp_list": [
         {
@@ -543,8 +543,8 @@
       "z_level": 2
     },
     {
-      "grid_x": 56,
-      "grid_y": 26,
+      "grid_x": 51,
+      "grid_y": 29,
       "hover_effect_texture": {
         "height": 512,
         "location": "modernwarpmenu:textures/gui/islands/dungeon_hub.png",
@@ -560,6 +560,31 @@
         {
           "command_name": "dungeons",
           "display_name": "Spawn",
+          "grid_x": 6,
+          "grid_y": 15
+        }
+      ],
+      "width_percentage": 0.03,
+      "z_level": 2
+    },
+    {
+      "grid_x": 56,
+      "grid_y": 27,
+      "hover_effect_texture": {
+        "height": 268,
+        "location": "modernwarpmenu:textures/gui/islands/rift_npc.png",
+        "width": 122
+      },
+      "name": "Rift NPC",
+      "texture": {
+        "height": 268,
+        "location": "modernwarpmenu:textures/gui/islands/rift_npc.png",
+        "width": 122
+      },
+      "warp_list": [
+        {
+          "command_name": "rift",
+          "display_name": "Rift",
           "grid_x": 6,
           "grid_y": 15
         }

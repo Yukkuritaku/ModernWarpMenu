@@ -76,7 +76,7 @@ public record ItemMatchCondition(int inventorySlot,
             boolean lorePatternMatches;
             if (!StringUtil.isNullOrEmpty(this.itemName) || !this.itemNameList.isEmpty()) {
                 String itemStackName = stack.has(DataComponents.CUSTOM_NAME) ?
-                        ChatFormatting.stripFormatting(stack.getHoverName().getString()) : null;
+                        ChatFormatting.stripFormatting(stack.getHoverName().getString()).trim() : null;
                 itemNameMatches = itemStackName != null
                         && (itemStackName.equals(this.itemName) || this.itemNameList.contains(itemStackName));
 

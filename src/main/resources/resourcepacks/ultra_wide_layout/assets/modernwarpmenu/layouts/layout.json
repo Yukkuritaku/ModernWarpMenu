@@ -286,7 +286,7 @@
     },
     {
       "grid_x": 43,
-      "grid_y": 27,
+      "grid_y": 29,
       "hover_effect_texture": {
         "height": 488,
         "location": "modernwarpmenu:textures/gui/islands/private_island.png",
@@ -310,8 +310,8 @@
       "z_level": 1
     },
     {
-      "grid_x": 48,
-      "grid_y": 27,
+      "grid_x": 47,
+      "grid_y": 24,
       "hover_effect_texture": {
         "height": 569,
         "location": "modernwarpmenu:textures/gui/islands/garden.png",
@@ -460,7 +460,7 @@
     },
     {
       "grid_x": 51,
-      "grid_y": 16,
+      "grid_y": 15,
       "hover_effect_texture": {
         "height": 667,
         "location": "modernwarpmenu:textures/gui/islands/bayou.png",
@@ -512,8 +512,8 @@
       "z_level": 2
     },
     {
-      "grid_x": 56,
-      "grid_y": 26,
+      "grid_x": 57,
+      "grid_y": 24,
       "hover_effect_texture": {
         "height": 512,
         "location": "modernwarpmenu:textures/gui/islands/dungeon_hub.png",
@@ -529,6 +529,31 @@
         {
           "command_name": "dungeons",
           "display_name": "Spawn",
+          "grid_x": 6,
+          "grid_y": 15
+        }
+      ],
+      "width_percentage": 0.03,
+      "z_level": 2
+    },
+    {
+      "grid_x": 53,
+      "grid_y": 29,
+      "hover_effect_texture": {
+        "height": 268,
+        "location": "modernwarpmenu:textures/gui/islands/rift_npc.png",
+        "width": 122
+      },
+      "name": "Rift NPC",
+      "texture": {
+        "height": 268,
+        "location": "modernwarpmenu:textures/gui/islands/rift_npc.png",
+        "width": 122
+      },
+      "warp_list": [
+        {
+          "command_name": "rift",
+          "display_name": "Rift",
           "grid_x": 6,
           "grid_y": 15
         }

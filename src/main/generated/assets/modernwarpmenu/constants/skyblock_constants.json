@@ -15,9 +15,13 @@
         "inventory_slot": 53,
         "item_id_list": [
           "minecraft:map",
-          "minecraft:filled_map"
+          "minecraft:filled_map",
+          "minecraft:black_stained_glass_pane"
         ],
-        "item_name": "Paper Icons"
+        "item_name_list": [
+          "Paper Icons",
+          ""
+        ]
       }
     ],
     "porhtal": [

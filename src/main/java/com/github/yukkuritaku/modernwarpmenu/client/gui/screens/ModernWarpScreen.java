@@ -67,6 +67,7 @@ public class ModernWarpScreen extends CustomContainerScreen {
     private final ChestMenu menu;
     private ConfigButton configButton;
     private InventoryChangeListener inventoryListener;
+    private boolean initialInventoryMatchHandled;
 
     /**
      * Last slot index in the {@link com.github.yukkuritaku.modernwarpmenu.data.skyblockconstants.menu.ItemMatchCondition}
@@ -126,7 +127,8 @@ public class ModernWarpScreen extends CustomContainerScreen {
         triggered. For example, slot 53 is actually set on the 106th time the item change event triggers.
         (lastSlotIndexToCheck + 1) since slots are 0-indexed but trigger count starts at 1
          */
-        if (triggerCount > (this.lastSlotIndexToCheck + 1) * 2) {
+        if (!this.initialInventoryMatchHandled && triggerCount > (this.lastSlotIndexToCheck + 1) * 2) {
+            this.initialInventoryMatchHandled = true;
             try {
                 boolean menuItemsMatch = GameCheckUtils.menuItemsMatch(this.warpMenu, this.chestInventory);
                 setCustomUIState(menuItemsMatch, menuItemsMatch);
