@@ -33,9 +33,9 @@ public class WarpMenuListener {
 
     public void registerEvents(){
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            if (client.screen == null){
+            if (client.gui.screen() == null){
                 if (ModernWarpMenuState.isOpenConfigMenuRequested()){
-                    client.setScreen(SettingsManager.createSettingsScreen(null));
+                    client.gui.setScreen(SettingsManager.createSettingsScreen(null));
                     ModernWarpMenuState.setOpenConfigMenuRequested(false);
                 }
             }
@@ -54,9 +54,9 @@ public class WarpMenuListener {
             if (GameState.isOnSkyBlock() && screen instanceof ContainerScreen containerScreen){
                 Menu menu = GameCheckUtils.determineOpenMenu(containerScreen.getTitle());
                 if (menu == Menu.FAST_TRAVEL){
-                    minecraft.setScreen(new FastTravelScreen(containerScreen.getMenu(), Objects.requireNonNull(minecraft.player).getInventory(), ModernWarpMenuState.getOverworldLayout()));
+                    minecraft.gui.setScreen(new FastTravelScreen(containerScreen.getMenu(), Objects.requireNonNull(minecraft.player).getInventory(), ModernWarpMenuState.getOverworldLayout()));
                 }else if (menu == Menu.PORHTAL){
-                    minecraft.setScreen(new RiftFastTravelScreen(containerScreen.getMenu(), Objects.requireNonNull(minecraft.player).getInventory(), ModernWarpMenuState.getRiftLayout()));
+                    minecraft.gui.setScreen(new RiftFastTravelScreen(containerScreen.getMenu(), Objects.requireNonNull(minecraft.player).getInventory(), ModernWarpMenuState.getRiftLayout()));
                 }
             }
         });

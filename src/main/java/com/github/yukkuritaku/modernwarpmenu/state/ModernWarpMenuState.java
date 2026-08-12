@@ -33,7 +33,7 @@ public class ModernWarpMenuState {
     }
 
     public static boolean isModernWarpMenuOpen() {
-        return Minecraft.getInstance().screen instanceof ModernWarpScreen;
+        return Minecraft.getInstance().gui.screen() instanceof ModernWarpScreen;
     }
 
     public static boolean isOpenConfigMenuRequested() {

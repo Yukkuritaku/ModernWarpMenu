@@ -40,7 +40,7 @@
 	"accessWidener": "modernwarpmenu.classtweaker",
 	"depends": {
 		"fabricloader": ">=0.19.0",
-		"minecraft": "~26.1.2",
+		"minecraft": "~26.2",
 		"java": ">=21",
 		"fabric-api": "*",
 		"yet_another_config_lib_v3": "*"

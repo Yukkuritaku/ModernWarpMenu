@@ -35,8 +35,8 @@ public class ChatListener {
                 if (ModernWarpMenu.getInstance().getSkyBlockConstantsManager().getSkyBlockConstants().warpMessages().warpFailMessages().containsKey(text)){
                     String failMessageKey = ModernWarpMenu.getInstance().getSkyBlockConstantsManager()
                             .getSkyBlockConstants().warpMessages().warpFailMessages().get(text);
-                    if (mc.screen != null && mc.screen instanceof ModernWarpScreen)
-                        ((ModernWarpScreen) mc.screen).onWarpFail(failMessageKey);
+                    if (mc.gui.screen() != null && mc.gui.screen() instanceof ModernWarpScreen)
+                        ((ModernWarpScreen) mc.gui.screen()).onWarpFail(failMessageKey);
                 }
             }
         });
@@ -63,9 +63,9 @@ public class ChatListener {
             }
         });*/
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            if (this.chatMessageSendDetected && client.screen instanceof ChatScreen && screen == null) {
+            if (this.chatMessageSendDetected && client.gui.screen() instanceof ChatScreen && screen == null) {
                 this.chatMessageSendDetected = false;
-                List<String> sentMessages = mc.gui.getChat().getRecentChat();
+                List<String> sentMessages = mc.gui.hud.getChat().getRecentChat();
                 if (!sentMessages.isEmpty()) {
                     checkChatMessageForReminder(sentMessages.getLast());
                 }

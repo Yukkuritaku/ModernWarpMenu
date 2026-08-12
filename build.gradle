@@ -62,7 +62,7 @@ repositories {
 		url = 'https://maven.parchmentmc.org'
 	}
 	maven { url "https://maven.shedaniel.me" }
-    maven { url 'https://maven.operationpotato.com/snapshots' }
+    maven { url 'https://maven.operationpotato.com/releases' }
 
 	//conditional-mixin https://github.com/Fallen-Breath/conditional-mixin
 	maven { url 'https://maven.fallenbreath.me/releases' }
