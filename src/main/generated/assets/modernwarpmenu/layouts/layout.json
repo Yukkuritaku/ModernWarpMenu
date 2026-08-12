@@ -168,7 +168,7 @@
       "z_level": 1
     },
     {
-      "grid_x": 2,
+      "grid_x": 1,
       "grid_y": 2,
       "hover_effect_texture": {
         "height": 1320,
@@ -397,8 +397,8 @@
       "z_level": 2
     },
     {
-      "grid_x": 12,
-      "grid_y": 22,
+      "grid_x": 14,
+      "grid_y": 28,
       "hover_effect_texture": {
         "height": 1028,
         "location": "modernwarpmenu:textures/gui/islands/park.png",
@@ -434,8 +434,8 @@
       "z_level": 0
     },
     {
-      "grid_x": 1,
-      "grid_y": 18,
+      "grid_x": 10,
+      "grid_y": 20,
       "hover_effect_texture": {
         "height": 871,
         "location": "modernwarpmenu:textures/gui/islands/galatea.png",
@@ -459,6 +459,43 @@
           "display_name": "Murkwater",
           "grid_x": 22,
           "grid_y": 15
+        }
+      ],
+      "width_percentage": 0.15,
+      "z_level": 0
+    },
+    {
+      "grid_x": 1,
+      "grid_y": 16,
+      "hover_effect_texture": {
+        "height": 616,
+        "location": "modernwarpmenu:textures/gui/islands/canyon.png",
+        "width": 756
+      },
+      "name": "Torrhus Canyon",
+      "texture": {
+        "height": 616,
+        "location": "modernwarpmenu:textures/gui/islands/canyon.png",
+        "width": 756
+      },
+      "warp_list": [
+        {
+          "command_name": "torrhus",
+          "display_name": "Spawn",
+          "grid_x": 13,
+          "grid_y": 25
+        },
+        {
+          "command_name": "springs",
+          "display_name": "Springs",
+          "grid_x": 23,
+          "grid_y": 11
+        },
+        {
+          "command_name": "safari",
+          "display_name": "Critter Safari",
+          "grid_x": 9,
+          "grid_y": 14
         }
       ],
       "width_percentage": 0.15,
