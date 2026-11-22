@@ -35,6 +35,8 @@ public class Settings {
         @SerialEntry
         public boolean showRegularWarpMenuButton = false;
         @SerialEntry
+        public boolean showIslandBrowserButton = true;
+        @SerialEntry
         public boolean useHypixelAPI = true;
     }
 

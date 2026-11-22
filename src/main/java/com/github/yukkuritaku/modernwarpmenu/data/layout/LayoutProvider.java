@@ -179,7 +179,8 @@ public class LayoutProvider implements DataProvider {
                 ),
                 new Button(new LayoutTexture(Identifier.fromNamespaceAndPath(ModernWarpMenu.MOD_ID,
                         "textures/gui/regular_warp_menu.png"), 128, 64), 60, 29, 0.03f
-                )
+                ),
+                new Button(new LayoutTexture(Identifier.fromNamespaceAndPath("minecraft", "textures/item/blaze_powder.png"), 16, 16), 60, 26, 0.03f)
         ),
                 "layout"));
         this.layouts.add(new LayoutFile(new Layout(
@@ -207,7 +208,8 @@ public class LayoutProvider implements DataProvider {
                 ),
                 new Button(new LayoutTexture(Identifier.fromNamespaceAndPath(ModernWarpMenu.MOD_ID,
                         "textures/gui/regular_warp_menu.png"), 128, 64), 60, 29, 0.05f
-                )), "rift_layout"));
+                ),
+                new Button(new LayoutTexture(Identifier.fromNamespaceAndPath("minecraft", "textures/item/blaze_powder.png"), 16, 16), 60, 26, 0.03f)), "rift_layout"));
     }
 
     @Override

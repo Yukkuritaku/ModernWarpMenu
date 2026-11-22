@@ -185,11 +185,13 @@ public class ModernWarpScreen extends CustomContainerScreen {
         }
     }
 
-    protected void islandButtonHandler(IslandButton button) {
+    protected void addIslandBrowserButton(){
+        if (this.layout.islandBrowserButton() != null)
+            this.addRenderableWidget(new IslandBrowserButton(this.layout, this.window, this.grid, _ -> clickSlot(45), Supplier::get));
     }
+    protected void islandButtonHandler(IslandButton button) {}
 
-    protected void warpButtonHandler(WarpButton button) {
-    }
+    protected void warpButtonHandler(WarpButton button) {}
 
     /**
      * Called when a warp attempt fails
@@ -321,6 +323,10 @@ public class ModernWarpScreen extends CustomContainerScreen {
                 }
             }, Supplier::get));
         }
+        if (SettingsManager.get().general.showIslandBrowserButton) {
+            this.addIslandBrowserButton();
+        }
+
         /*
         Sometimes button initialization and visibility checks go wrong.
         This halts screen initialization and lets the user copy the exception in those cases.

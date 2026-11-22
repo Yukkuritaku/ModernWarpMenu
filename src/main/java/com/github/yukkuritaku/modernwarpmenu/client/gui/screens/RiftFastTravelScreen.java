@@ -18,6 +18,9 @@ public class RiftFastTravelScreen extends ModernWarpScreen{
     }
 
     @Override
+    protected void addIslandBrowserButton() {}
+
+    @Override
     protected void warpButtonHandler(WarpButton button) {
         if (Util.getMillis() > this.warpFailCoolDownExpiryTime) {
             clickSlot(button.getWarpSlotIndex());

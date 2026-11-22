@@ -11,13 +11,12 @@ import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
 import java.nio.file.Path;
 
 public class SettingsManager {
 
-    public static final int SETTINGS_VERSION = 0;
+    public static final int SETTINGS_VERSION = 1;
     private static final Path CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve("modernwarpmenu.json");
     private static final ConfigClassHandler<Settings> HANDLER = ConfigClassHandler.createBuilder(Settings.class)
             .serializer(config -> GsonConfigSerializerBuilder.create(config)

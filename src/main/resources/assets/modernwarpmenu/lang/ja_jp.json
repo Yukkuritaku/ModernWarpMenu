@@ -32,6 +32,8 @@
   "modernwarpmenu.config.general.enableUpdateNotification.tooltip": "Modern Warp Menuのアップデートがある際に設定ボタンと設定画面に通知を表示します。",
   "modernwarpmenu.config.general.showRegularWarpMenuButton": "通常のワープ画面に切り替えれるボタンを表示",
   "modernwarpmenu.config.general.showRegularWarpMenuButton.tooltip": "通常のワープ画面にアクセスできるボタンを表示します。",
+  "modernwarpmenu.config.general.showIslandBrowserButton": "Island Browserボタンを表示",
+  "modernwarpmenu.config.general.showIslandBrowserButton.tooltip": "Island Browserにアクセスできるボタンを表示します。",
   "modernwarpmenu.config.general.useHypixelAPI": "Hypixel APIを使った検出",
   "modernwarpmenu.config.general.useHypixelAPI.tooltip": "有効にすると、Hypixel APIを使ってSkyBlockにいるかを検知します。正常に動作しない場合はこのオプションを無効にしてください。",
 

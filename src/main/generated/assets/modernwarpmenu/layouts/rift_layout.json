@@ -10,6 +10,16 @@
     },
     "width_percentage": 0.05
   },
+  "island_browser_button": {
+    "grid_x": 60,
+    "grid_y": 26,
+    "texture": {
+      "height": 16,
+      "location": "minecraft:textures/item/blaze_powder.png",
+      "width": 16
+    },
+    "width_percentage": 0.03
+  },
   "island_list": [
     {
       "grid_x": 21,

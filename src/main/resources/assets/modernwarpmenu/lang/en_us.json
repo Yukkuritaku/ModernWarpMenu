@@ -30,6 +30,8 @@
   "modernwarpmenu.config.general.enableUpdateNotification.tooltip": "Show a notification on the settings button and in the settings menu when a new version of Modern Warp Menu is available",
   "modernwarpmenu.config.general.showRegularWarpMenuButton": "Show Regular Warp Menu Button",
   "modernwarpmenu.config.general.showRegularWarpMenuButton.tooltip": "Show the button to access the regular warp menu",
+  "modernwarpmenu.config.general.showIslandBrowserButton": "Show Island Browser Button",
+  "modernwarpmenu.config.general.showIslandBrowserButton.tooltip": "Show the button to access the Island Browser Menu",
   "modernwarpmenu.config.general.useHypixelAPI": "Use Hypixel API Detection",
   "modernwarpmenu.config.general.useHypixelAPI.tooltip": "If Enabled, Uses Hypixel API for detect the Hypixel servers. if does not work correctly, disable this option.",
 
