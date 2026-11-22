@@ -63,6 +63,7 @@
   "modernwarpmenu.errors.unknownDestination": "Unknown Destination",
   "modernwarpmenu.errors.noDestination": "No Destination Found",
   "modernwarpmenu.errors.notVisited": "Visit Location to Unlock Warp",
+  "modernwarpmenu.errors.transferCooldown": "Warp Cooldown",
   "modernwarpmenu.errors.notOpenYet": "Not Open Yet",
   "modernwarpmenu.errors.slotNumberOutOfBounds": "Invalid Slot Number (%d)",
   "modernwarpmenu.errors.slotHasNoItem": "Slot %d Has No Item to Click On",

@@ -57,7 +57,8 @@
       "Jerry's Workshop is only available during the Winter!": "modernwarpmenu.errors.notOpenYet",
       "Unknown destination! Check the Fast Travel menu to view options!": "modernwarpmenu.errors.unknownDestination",
       "You haven't unlocked this fast travel destination!": "modernwarpmenu.errors.notUnlocked",
-      "You need to have visited this island at least once before fast traveling to it!": "modernwarpmenu.errors.notVisited"
+      "You need to have visited this island at least once before fast traveling to it!": "modernwarpmenu.errors.notVisited",
+      "Couldn't warp you! Try again later. (PLAYER_TRANSFER_COOLDOWN)": "modernwarpmenu.errors.transferCooldown"
     },
     "warp_success_messages": [
       "Warping..."

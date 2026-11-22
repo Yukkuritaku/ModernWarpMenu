@@ -65,6 +65,7 @@
   "modernwarpmenu.errors.unknownDestination": "不明な場所です",
   "modernwarpmenu.errors.noDestination": "場所が見つかりません",
   "modernwarpmenu.errors.notVisited": "一度訪れると解放できます",
+  "modernwarpmenu.errors.transferCooldown": "ワープのクールタイム中です",
   "modernwarpmenu.errors.notOpenYet": "まだ開いていません",
   "modernwarpmenu.errors.slotNumberOutOfBounds": "無効なスロット番号です (%d)",
   "modernwarpmenu.errors.slotHasNoItem": "スロット %d にはアイテムが無くてクリックできません",

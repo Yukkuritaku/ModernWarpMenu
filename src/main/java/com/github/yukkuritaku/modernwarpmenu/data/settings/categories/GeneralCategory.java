@@ -94,6 +94,14 @@ public class GeneralCategory {
                         .controller(option -> BooleanControllerBuilder.create(option).yesNoFormatter().coloured(true))
                         .build())
                 .option(Option.<Boolean>createBuilder()
+                        .name(Component.translatable("modernwarpmenu.config.general.showIslandBrowserButton"))
+                        .description(OptionDescription.of(Component.translatable("modernwarpmenu.config.general.showIslandBrowserButton.tooltip")))
+                        .binding(defaults.general.showIslandBrowserButton,
+                                () -> config.general.showIslandBrowserButton,
+                                value -> config.general.showIslandBrowserButton = value)
+                        .controller(option -> BooleanControllerBuilder.create(option).yesNoFormatter().coloured(true))
+                        .build())
+                .option(Option.<Boolean>createBuilder()
                         .name(Component.translatable("modernwarpmenu.config.general.useHypixelAPI"))
                         .description(OptionDescription.of(Component.translatable("modernwarpmenu.config.general.useHypixelAPI.tooltip")))
                         .binding(defaults.general.useHypixelAPI,

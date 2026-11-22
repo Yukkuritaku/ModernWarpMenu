@@ -20,7 +20,8 @@ public class Island {
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("grid_y").forGetter(island -> island.gridY),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("z_level").forGetter(island -> island.zLevel),
                             ExtraCodecs.NON_NEGATIVE_FLOAT.fieldOf("width_percentage").forGetter(island -> island.widthPercentage),
-                            Warp.CODEC.codec().listOf().fieldOf("warp_list").forGetter(island -> island.warpList)
+                            Warp.CODEC.codec().listOf().fieldOf("warp_list").forGetter(island -> island.warpList),
+                            ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("default_warp_index", 0).forGetter(island -> island.defaultWarpIndex)
                     )
                     .apply(instance, Island::new))
             .validate(Island::validate);
@@ -41,8 +42,10 @@ public class Island {
     public final int zLevel;
     public final float widthPercentage;
     public final List<Warp> warpList;
+    private final int defaultWarpIndex;
     private transient int width;
     private transient int height;
+
 
     Island(String name,
            LayoutTexture texture,
@@ -51,7 +54,7 @@ public class Island {
            int zLevel,
            float widthPercentage,
            List<Warp> warpList) {
-        this(name, texture, texture, gridX, gridY, zLevel, widthPercentage, warpList);
+        this(name, texture, texture, gridX, gridY, zLevel, widthPercentage, warpList, 0);
     }
     Island(String name,
            LayoutTexture texture,
@@ -60,7 +63,8 @@ public class Island {
            int gridY,
            int zLevel,
            float widthPercentage,
-           List<Warp> warpList) {
+           List<Warp> warpList,
+           int defaultWarpIndex) {
         this.name = name;
         this.texture = texture;
         this.hoverEffectTexture = hoverEffectTexture;
@@ -69,6 +73,7 @@ public class Island {
         this.zLevel = zLevel;
         this.widthPercentage = widthPercentage;
         this.warpList = warpList;
+        this.defaultWarpIndex = defaultWarpIndex;
     }
 
     private static DataResult<Island> validate(Island island){

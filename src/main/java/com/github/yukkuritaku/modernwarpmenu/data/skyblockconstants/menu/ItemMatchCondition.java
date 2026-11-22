@@ -108,6 +108,7 @@ public record ItemMatchCondition(int inventorySlot,
             if (!StringUtil.isNullOrEmpty(this.skyBlockItemId) || !this.skyBlockItemIdList.isEmpty()) {
                 Optional<CompoundTag> extraAttributes = tag.getCompound("ExtraAttributes");
                 if (extraAttributes.isEmpty()) {
+                    LOGGER.warn("ExtraAttributes is empty");
                     return false;
                 }
                 Optional<String> skyBlockId = extraAttributes.get().getString("id");
@@ -128,6 +129,7 @@ public record ItemMatchCondition(int inventorySlot,
             if (this.loreMatchPattern != EMPTY_PATTERN && !Objects.equals(loreMatchPattern.pattern(), EMPTY_PATTERN.pattern())) {
                 Optional<CompoundTag> display = tag.getCompound("display");
                 if (display.isEmpty()){
+                    LOGGER.warn("Display is empty");
                     return false;
                 }
                 Optional<ListTag> lore = display.get().getList("Lore");
