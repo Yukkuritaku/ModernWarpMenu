@@ -39,7 +39,6 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import java.awt.*;
@@ -103,8 +102,8 @@ public class ModernWarpScreen extends CustomContainerScreen {
     }
 
     private boolean hasShiftDown() {
-        return InputConstants.isKeyDown(this.window, GLFW.GLFW_KEY_LEFT_SHIFT) ||
-                InputConstants.isKeyDown(this.window, GLFW.GLFW_KEY_RIGHT_SHIFT);
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) ||
+                InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
     }
     public ScaledGrid getScaledGrid() {
         return this.grid;
@@ -253,7 +252,7 @@ public class ModernWarpScreen extends CustomContainerScreen {
                 drawX,
                 drawY,
                 DefaultTooltipPositioner.INSTANCE,
-                null
+                null, true
         );
         graphics.fill(drawX - 2, drawY - 2, drawX + 2, drawY + 2, Color.RED.getRGB());
     }
@@ -502,7 +501,7 @@ public class ModernWarpScreen extends CustomContainerScreen {
                     mouseX,
                     mouseY,
                     DefaultTooltipPositioner.INSTANCE,
-                    null
+                    null, true
             );
         }
 

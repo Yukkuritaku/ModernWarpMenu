@@ -19,7 +19,7 @@ public class KeyboardHandlerMixin {
     @Inject(method = "keyPress", at = @At("TAIL"))
     private void onKeyPress(long handle, int action, KeyEvent event, CallbackInfo ci){
         if (handle == this.minecraft.getWindow().handle()) {
-            InputEvents.KEY_PRESSED.invoker().onKeyPressed(event.key(), event.scancode(), action, event.modifiers());
+            InputEvents.KEY_PRESSED.invoker().onKeyPressed(event.key(), event.keycode(), action, event.modifiers());
         }
     }
 }

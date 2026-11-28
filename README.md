@@ -2,7 +2,7 @@
 
 This project is an Unofficial modern minecraft port of [Fancy Warp Menu](https://github.com/ILikePlayingGames/FancyWarpMenu)!
 
-Supported version: [1.21.5](https://github.com/Yukkuritaku/ModernWarpMenu/tree/1.21.5), [1.21.6-1.21.8](https://github.com/Yukkuritaku/ModernWarpMenu/tree/1.21.8), 1.21.11
+Supported version: [1.21.5](https://github.com/Yukkuritaku/ModernWarpMenu/tree/1.21.5), [1.21.6-1.21.8](https://github.com/Yukkuritaku/ModernWarpMenu/tree/1.21.8), 1.21.11, 26.3
 
 ---
 
